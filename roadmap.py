@@ -154,6 +154,15 @@ STAGE_COLORS = {
     # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
 
+def get_stage_div(stage):
+    color = STAGE_COLORS.get(stage, "rgba(206, 205, 202, 0.5)")
+    return (
+        f'<div style="background-color: {color}; padding: 1px 6px; '
+        "margin: 0 5px; display: inline; vertical-align: middle; "
+        f'border-radius: 3px; font-size: 0.75rem; font-weight: 400;">{stage}'
+        "</div>"
+    )
+
 def _reverse_sort_by_stage(projects):
     return sorted(
         projects,
@@ -232,11 +241,14 @@ def draw(user_is_internal):
                 notion_link_str = ""
 
             if STAGE_NUMBERS[p.stage] >= 2:
-                stage = f'<div style="background-color: {STAGE_COLORS.get(p.stage, "rgba(206, 205, 202, 0.5)")}; padding: 1px 6px; margin: 0 5px; display: inline; vertical-align: middle; border-radius: 3px; font-size: 0.75rem; font-weight: 400;">{p.stage}</div>'
+                stage = get_stage_div(p.stage)
             else:
                 stage = ""
 
-            st.markdown(f'### **{p.title}** {stage} <small>{notion_link_str}</small>', unsafe_allow_html=True)
+            st.markdown(
+                f'### **{p.title}** {stage} <small>{notion_link_str}</small>', 
+                unsafe_allow_html=True
+            )
 
             if p.public_description:
                 st.markdown(p.public_description)
