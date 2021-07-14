@@ -1,3 +1,4 @@
 Pipfile
 Pipfile.lock
 .venv
+.streamlit
