@@ -139,6 +139,21 @@ STAGE_NUMBERS = defaultdict(lambda: -1, {
     "🏁 Ready for launch": 9,
 })
 
+STAGE_COLORS = {
+    "Needs triage": "rgba(206, 205, 202, 0.5)",
+    # "Backlog": "rgba(206, 205, 202, 0.5)",
+    "Prioritized": "rgba(206, 205, 202, 0.5)",
+    "👟 Scoping / speccing": "rgba(221, 0, 129, 0.2)",
+    "👷 Ready for tech design": "rgba(255, 0, 26, 0.2)",
+    "👷 In tech design": "rgba(245, 93, 0, 0.2)",
+    # "👷 Ready for dev": "rgba(233, 168, 0, 0.2)",
+    "👷 In development": "rgba(0, 135, 107, 0.2)",
+    "👟 👷 In testing + polishing": "rgba(0, 120, 223, 0.2)",
+    "🏁 Ready for launch": "rgba(103, 36, 222, 0.2)",
+    "✅ Done": "rgba(140, 46, 0, 0.2)",
+    # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
+}
+
 def _reverse_sort_by_stage(projects):
     return sorted(
         projects,
@@ -217,11 +232,11 @@ def draw(user_is_internal):
                 notion_link_str = ""
 
             if STAGE_NUMBERS[p.stage] >= 2:
-                stage = f" &nbsp; {p.stage}"
+                stage = f'<div style="background-color: {STAGE_COLORS.get(p.stage, "rgba(206, 205, 202, 0.5)")}; padding: 1px 6px; margin: 0 5px; display: inline; vertical-align: middle; border-radius: 3px; font-size: 0.75rem; font-weight: 400;">{p.stage}</div>'
             else:
                 stage = ""
 
-            st.markdown(f"### {p.title}<small>{stage}{notion_link_str}</small>", unsafe_allow_html=True)
+            st.markdown(f'### **{p.title}** {stage} <small>{notion_link_str}</small>', unsafe_allow_html=True)
 
             if p.public_description:
                 st.markdown(p.public_description)
