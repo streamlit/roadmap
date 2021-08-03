@@ -135,7 +135,7 @@ STAGE_NUMBERS = defaultdict(lambda: -1, {
     "👷 In tech design": 5,
     "👷 In development": 6,
     "👟 👷 In testing + polishing": 7,
-    "✅ Done": 8,
+    "✅ Done / Launched": 8,
     "🏁 Ready for launch": 9,
 })
 
@@ -150,7 +150,7 @@ STAGE_COLORS = {
     "👷 In development": "rgba(0, 135, 107, 0.2)",
     "👟 👷 In testing + polishing": "rgba(0, 120, 223, 0.2)",
     "🏁 Ready for launch": "rgba(103, 36, 222, 0.2)",
-    "✅ Done": "rgba(140, 46, 0, 0.2)",
+    "✅ Done / Launched": "rgba(140, 46, 0, 0.2)",
     # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
 

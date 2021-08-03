@@ -2,3 +2,4 @@ Pipfile
 Pipfile.lock
 .venv
 .streamlit
+__pycache__
