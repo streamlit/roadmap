@@ -13,6 +13,7 @@ _TTL = 12*60*60
 Project = namedtuple("Project", [
     "id",
     "title",
+    "icon",
     "public_description",
     "stage",
     "start_date",
@@ -62,6 +63,10 @@ def _get_roadmap(results, show_private_roadmap, group_by):
         props = result["properties"]
 
         title = _get_plain_text(props["Name"]["title"])
+        if "icon" in result and result["icon"]["type"] == "emoji":
+            icon = result["icon"]["emoji"]
+        else:
+            icon = "🏳️"
         public_description = _get_plain_text(props["Public description"]["rich_text"])
 
         if "Stage" in props:
@@ -87,6 +92,7 @@ def _get_roadmap(results, show_private_roadmap, group_by):
         p = Project(
             id=result["id"],
             title=title,
+            icon=icon,
             public_description=public_description,
             stage=stage,
             start_date=start_date,
@@ -246,7 +252,7 @@ def draw(user_is_internal):
                 stage = ""
 
             st.markdown(
-                f'### **{p.title}** {stage} <small>{notion_link_str}</small>', 
+                f'#### {p.icon} {p.title} {stage} <small>{notion_link_str}</small>', 
                 unsafe_allow_html=True
             )
 
