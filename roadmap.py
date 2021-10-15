@@ -8,19 +8,23 @@ import calendar
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
 _the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
 
-_TTL = 12*60*60
+_TTL = 12 * 60 * 60
 
-Project = namedtuple("Project", [
-    "id",
-    "title",
-    "icon",
-    "public_description",
-    "stage",
-    "start_date",
-    "end_date",
-])
+Project = namedtuple(
+    "Project",
+    [
+        "id",
+        "title",
+        "icon",
+        "public_description",
+        "stage",
+        "start_date",
+        "end_date",
+    ],
+)
 TimeGrouping = namedtuple("TimeGrouping", ["year", "number"])
 _FUTURE = TimeGrouping(10000, 10000)
+
 
 @st.cache(allow_output_mutation=True, ttl=_TTL)
 def _get_raw_roadmap(only_public=True):
@@ -29,31 +33,40 @@ def _get_raw_roadmap(only_public=True):
     public_filter = []
 
     if only_public:
-        public_filter = [dict(
-            property="Show on public roadmap",
-            checkbox=dict(
-                equals=True,
-            ),
-        )]
+        public_filter = [
+            dict(
+                property="Show on public roadmap",
+                checkbox=dict(
+                    equals=True,
+                ),
+            )
+        ]
 
     return notion.databases.query(
         database_id=_DB_ID,
         filter={
-            "and": [{
-                "or": [{
-                    "property": "End date",
-                    "date": {
-                        "after": _get_last_quarter_date_str(),
-                    },
-                }, {
-                    "property": "End date",
-                    "date": {
-                        "is_empty": True,
-                    },
-                }]
-            }, *public_filter],
+            "and": [
+                {
+                    "or": [
+                        {
+                            "property": "End date",
+                            "date": {
+                                "after": _get_last_quarter_date_str(),
+                            },
+                        },
+                        {
+                            "property": "End date",
+                            "date": {
+                                "is_empty": True,
+                            },
+                        },
+                    ]
+                },
+                *public_filter,
+            ],
         },
     )
+
 
 @st.cache(allow_output_mutation=True, ttl=_TTL)
 def _get_roadmap(results, show_private_roadmap, group_by):
@@ -75,8 +88,8 @@ def _get_roadmap(results, show_private_roadmap, group_by):
             stage = ""
 
         if (
-            "Schedule" in props 
-            and "date" in props["Schedule"] 
+            "Schedule" in props
+            and "date" in props["Schedule"]
             and props["Schedule"]["date"] is not None
         ):
             start_date = props["Schedule"]["date"]["start"]
@@ -117,6 +130,7 @@ def _get_roadmap(results, show_private_roadmap, group_by):
 
     return roadmap
 
+
 def _get_last_quarter_date_str():
     now = datetime.datetime.now()
     this_month = now.month
@@ -127,30 +141,38 @@ def _get_last_quarter_date_str():
         prev_quarter_num = 4
         prev_quarter_year -= 1
     prev_quarter_month = (prev_quarter_num - 1) * 3 + 1
-    prev_quarter = datetime.datetime(month=prev_quarter_month, day=1, year=prev_quarter_year)
+    prev_quarter = datetime.datetime(
+        month=prev_quarter_month, day=1, year=prev_quarter_year
+    )
     return prev_quarter.isoformat()
+
 
 def _get_quarter_for_iso_date(date_iso):
     date = datetime.datetime.fromisoformat(date_iso)
     quarter_num = (date.month - 1) // 3 + 1
     return TimeGrouping(number=quarter_num, year=date.year)
 
+
 def _get_month_year_for_iso_date(date_iso):
     date = datetime.datetime.fromisoformat(date_iso)
     return TimeGrouping(number=date.month, year=date.year)
 
-STAGE_NUMBERS = defaultdict(lambda: -1, {
-    "Needs triage": 0,
-    "Prioritized": 1,
-    "⏳ Paused / Waiting": 2,
-    "👟 Scoping / speccing": 3,
-    "👷 Ready for tech design": 4,
-    "👷 In tech design": 5,
-    "👷 In development": 6,
-    "👟 👷 In testing + polishing": 7,
-    "✅ Done / Launched": 8,
-    "🏁 Ready for launch": 9,
-})
+
+STAGE_NUMBERS = defaultdict(
+    lambda: -1,
+    {
+        "Needs triage": 0,
+        "Prioritized": 1,
+        "⏳ Paused / Waiting": 2,
+        "👟 Scoping / speccing": 3,
+        "👷 Ready for tech design": 4,
+        "👷 In tech design": 5,
+        "👷 In development": 6,
+        "👟 👷 In testing + polishing": 7,
+        "✅ Done / Launched": 8,
+        "🏁 Ready for launch": 9,
+    },
+)
 
 STAGE_COLORS = {
     "Needs triage": "rgba(206, 205, 202, 0.5)",
@@ -167,6 +189,7 @@ STAGE_COLORS = {
     # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
 
+
 def get_stage_div(stage):
     color = STAGE_COLORS.get(stage, "rgba(206, 205, 202, 0.5)")
     return (
@@ -176,20 +199,21 @@ def get_stage_div(stage):
         "</div>"
     )
 
+
 def _reverse_sort_by_stage(projects):
-    return sorted(
-        projects,
-        key=lambda x: STAGE_NUMBERS[x.stage],
-        reverse=True)
+    return sorted(projects, key=lambda x: STAGE_NUMBERS[x.stage], reverse=True)
+
 
 def _get_plain_text(rich_text_property):
-    #st.write(rich_text_property)
+    # st.write(rich_text_property)
     return "".join(part["plain_text"] for part in rich_text_property)
+
 
 def draw(user_is_internal):
     st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=50)
 
-    st.write("""
+    st.write(
+        """
         # Streamlit roadmap
 
         Welcome to our roadmap! :wave:
@@ -201,12 +225,15 @@ def draw(user_is_internal):
         Streamlit's incredible growth has been fueled by our amazing community which has
         always been our best source of ideas. So if you don't see your favorite feature listed
         here, ask about it in our [forums](https://discuss.streamlit.io)!
-        """)
+        """
+    )
 
-    st.warning("""
+    st.warning(
+        """
         ✏️ **NOTE:** The dates below are our best guesses. We're bullish on them but we can't make any
         guarantees!
-    """)
+    """
+    )
 
     group_by = "Quarter"
     only_public = True
@@ -259,10 +286,9 @@ def draw(user_is_internal):
                 stage = ""
 
             st.markdown(
-                f'#### {p.icon} {p.title} {stage} <small>{notion_link_str}</small>', 
-                unsafe_allow_html=True
+                f"#### {p.icon} {p.title} {stage} <small>{notion_link_str}</small>",
+                unsafe_allow_html=True,
             )
 
             if p.public_description:
                 st.markdown(p.public_description)
-
