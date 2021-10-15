@@ -1,2 +1,2 @@
-streamlit==0.89.0
+streamlit-nightly
 notion-client
