@@ -74,7 +74,11 @@ def _get_roadmap(results, show_private_roadmap, group_by):
         else:
             stage = ""
 
-        if "Schedule" in props and "date" in props["Schedule"]:
+        if (
+            "Schedule" in props 
+            and "date" in props["Schedule"] 
+            and props["Schedule"]["date"] is not None
+        ):
             start_date = props["Schedule"]["date"]["start"]
             scheduled_end_date = props["Schedule"]["date"]["end"]
         else:
@@ -83,8 +87,11 @@ def _get_roadmap(results, show_private_roadmap, group_by):
 
         end_date = scheduled_end_date
 
-        if ("Public end date" in props
-            and "date" in props["Public end date"]):
+        if (
+            "Public end date" in props
+            and "date" in props["Public end date"]
+            and props["Public end date"]["date"] is not None
+        ):
 
             public_end_date = props["Public end date"]["date"]["start"]
             end_date = public_end_date or scheduled_end_date
