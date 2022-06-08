@@ -35,7 +35,7 @@ def _get_raw_roadmap(only_public=True):
     if only_public:
         public_filter = [
             dict(
-                property="Show on public roadmap",
+                property="Show on public Streamlit roadmap",
                 checkbox=dict(
                     equals=True,
                 ),
