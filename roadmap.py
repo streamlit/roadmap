@@ -211,7 +211,7 @@ def _get_plain_text(rich_text_property):
 
 
 def draw(user_is_internal):
-    st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=50)
+    st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
 
     st.write(
         """
@@ -219,21 +219,20 @@ def draw(user_is_internal):
 
         Welcome to our roadmap! :wave:
 
-        This app lists some important things we're either working on, or
-        about to work on. Plus there's always a lot more going on behind the scenes — we sometimes
-        like to surprise you :wink:
-
-        Streamlit's incredible growth has been fueled by our amazing community which has
-        always been our best source of ideas. So if you don't see your favorite feature listed
-        here, ask about it in our [forums](https://discuss.streamlit.io)!
+        This app lists some projects we're either working on or planning for the future. 
+        Plus, there's always more going on behind the scenes — we sometimes like to 
+        surprise you :wink: Our community is the best source of ideas. If you 
+        don't see your favorite feature listed here, let us know in the 
+        [forums](https://discuss.streamlit.io)!
         """
     )
 
-    st.warning(
+    st.write("")
+    st.info(
         """
-        ✏️ **NOTE:** The dates below are our best guesses. We're bullish on them but we can't make any
+        ⛴ The dates below are our best guesses. We're bullish on them but we can't make any
         guarantees!
-    """
+        """
     )
 
     group_by = "Quarter"
