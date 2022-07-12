@@ -76,6 +76,7 @@ def _get_roadmap(results, show_private_roadmap, group_by):
         props = result["properties"]
 
         title = _get_plain_text(props["Name"]["title"])
+        title = title.replace("(parent project)", "")  # Manually remove (parent project).
         if "icon" in result and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
         else:
