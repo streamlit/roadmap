@@ -170,8 +170,8 @@ STAGE_NUMBERS = defaultdict(
         "👷 In tech design": 5,
         "👷 In development": 6,
         "👟 👷 In testing + polishing": 7,
-        "✅ Done / Launched": 8,
-        "🏁 Ready for launch": 9,
+        "🏁 Ready for launch": 8,
+        "✅ Done / Launched": 9,
     },
 )
 
