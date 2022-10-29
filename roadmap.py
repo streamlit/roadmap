@@ -166,7 +166,6 @@ STAGE_NUMBERS = defaultdict(
         "Prioritized": 1,
         "⏳ Paused / Waiting": 2,
         "👟 Scoping / speccing": 3,
-        "👷 Ready for tech design": 4,
         "👷 In tech design": 5,
         "👷 In development / drafting": 6,
         "👟 👷 In testing / polishing": 7,
@@ -180,9 +179,7 @@ STAGE_COLORS = {
     # "Backlog": "rgba(206, 205, 202, 0.5)",
     "Prioritized": "rgba(206, 205, 202, 0.5)",
     "👟 Scoping / speccing": "rgba(221, 0, 129, 0.2)",
-    "👷 Ready for tech design": "rgba(255, 0, 26, 0.2)",
     "👷 In tech design": "rgba(245, 93, 0, 0.2)",
-    # "👷 Ready for dev": "rgba(233, 168, 0, 0.2)",
     "👷 In development / drafting": "rgba(0, 135, 107, 0.2)",
     "👟 👷 In testing / polishing": "rgba(0, 120, 223, 0.2)",
     "🏁 Ready for launch / publish": "rgba(103, 36, 222, 0.2)",
@@ -190,13 +187,27 @@ STAGE_COLORS = {
     # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
 
+STAGE_SHORT_NAMES = {
+    "Needs triage": "Needs triage",
+    "Backlog": "Backlog",
+    "Prioritized": "Prioritized",
+    "👟 Scoping / speccing": "👟 Planning",
+    "👷 In tech design": "👟 Planning",
+    "👷 In development / drafting": "👷 In development",
+    "👟 👷 In testing / polishing": "🧪 Testing",
+    "🏁 Ready for launch / publish": "🏁 Ready for launch",
+    "✅ Done / launched / published": "✅ Launched",
+    # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
+}
+
 
 def get_stage_div(stage):
     color = STAGE_COLORS.get(stage, "rgba(206, 205, 202, 0.5)")
+    short_name = STAGE_SHORT_NAMES.get(stage, stage)
     return (
         f'<div style="background-color: {color}; padding: 1px 6px; '
         "margin: 0 5px; display: inline; vertical-align: middle; "
-        f'border-radius: 3px; font-size: 0.75rem; font-weight: 400;">{stage}'
+        f'border-radius: 3px; font-size: 0.75rem; font-weight: 400;">{short_name}'
         "</div>"
     )
 
