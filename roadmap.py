@@ -193,7 +193,7 @@ STAGE_SHORT_NAMES = {
     "Prioritized": "Prioritized",
     "👟 Scoping / speccing": "👟 Planning",
     "👷 In tech design": "👟 Planning",
-    "👷 In development / drafting": "👷 In development",
+    "👷 In development / drafting": "👷 Development",
     "👟 👷 In testing / polishing": "🧪 Testing",
     "🏁 Ready for launch / publish": "🏁 Ready for launch",
     "✅ Done / launched / published": "✅ Launched",
