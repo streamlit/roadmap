@@ -168,10 +168,10 @@ STAGE_NUMBERS = defaultdict(
         "👟 Scoping / speccing": 3,
         "👷 Ready for tech design": 4,
         "👷 In tech design": 5,
-        "👷 In development": 6,
-        "👟 👷 In testing + polishing": 7,
-        "🏁 Ready for launch": 8,
-        "✅ Done / Launched": 9,
+        "👷 In development / drafting": 6,
+        "👟 👷 In testing / polishing": 7,
+        "🏁 Ready for launch / publish": 8,
+        "✅ Done / launched / published": 9,
     },
 )
 
@@ -183,10 +183,10 @@ STAGE_COLORS = {
     "👷 Ready for tech design": "rgba(255, 0, 26, 0.2)",
     "👷 In tech design": "rgba(245, 93, 0, 0.2)",
     # "👷 Ready for dev": "rgba(233, 168, 0, 0.2)",
-    "👷 In development": "rgba(0, 135, 107, 0.2)",
-    "👟 👷 In testing + polishing": "rgba(0, 120, 223, 0.2)",
-    "🏁 Ready for launch": "rgba(103, 36, 222, 0.2)",
-    "✅ Done / Launched": "rgba(140, 46, 0, 0.2)",
+    "👷 In development / drafting": "rgba(0, 135, 107, 0.2)",
+    "👟 👷 In testing / polishing": "rgba(0, 120, 223, 0.2)",
+    "🏁 Ready for launch / publish": "rgba(103, 36, 222, 0.2)",
+    "✅ Done / launched / published": "rgba(140, 46, 0, 0.2)",
     # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
 
