@@ -5,9 +5,7 @@ from collections import defaultdict, namedtuple
 import streamlit as st
 from notion_client import Client
 
-st.set_page_config(
-    "Roadmap", "https://streamlit.io/favicon.svg"
-)
+st.set_page_config("Roadmap", "https://streamlit.io/favicon.svg")
 
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
 _the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
@@ -112,29 +110,29 @@ def _get_current_quarter_label():
 
 
 QUARTER_TO_EMOJI = {1: "🌱", 2: "☀️", 3: "🍂", 4: "⛄️"}
-QUARTER_SORT = [
-    "☀️ Q2/FY23 (May - Jul 2022)",
-    "🍂 Q3/FY23 (Aug - Oct 2022)",
-    "⛄️ Q4/FY23 (Nov 2022 - Jan 2023)",
-    "🌱 Q1/FY24 (Feb - Apr 2023)",
-    "☀️ Q2/FY24 (May - Jul 2023)",
-    "🍂 Q3/FY24 (Aug - Oct 2023)",
-    "⛄️ Q4/FY24 (Nov 2023 - Jan 2024)",
-    "🌱 Q1/FY25 (Feb - Apr 2024)",
-    "☀️ Q2/FY25 (May - Jul 2024)",
-    "🍂 Q3/FY25 (Aug - Oct 2024)",
-    "⛄️ Q4/FY25 (Nov 2024 - Jan 2025)",
-    "🌈 Future",
-]
+QUARTER_SORT = {
+    "☀️ Q2/FY23 (May - Jul 2022)": 0,
+    "🍂 Q3/FY23 (Aug - Oct 2022)": 1,
+    "⛄️ Q4/FY23 (Nov 2022 - Jan 2023)": 2,
+    "🌱 Q1/FY24 (Feb - Apr 2023)": 3,
+    "☀️ Q2/FY24 (May - Jul 2023)": 4,
+    "🍂 Q3/FY24 (Aug - Oct 2023)": 5,
+    "⛄️ Q4/FY24 (Nov 2023 - Jan 2024)": 6,
+    "🌱 Q1/FY25 (Feb - Apr 2024)": 7,
+    "☀️ Q2/FY25 (May - Jul 2024)": 8,
+    "🍂 Q3/FY25 (Aug - Oct 2024)": 9,
+    "⛄️ Q4/FY25 (Nov 2024 - Jan 2025)": 10,
+    "🌈 Future": 11,
+}
 
-# TODO: Need to clean these dicts and make sure they are still accurate.
-STAGE_NUMBERS = defaultdict(
+STAGE_SORT = defaultdict(
     lambda: -1,
     {
         "Needs triage": 0,
-        "Prioritized": 1,
-        "⏳ Paused / Waiting": 2,
-        "👟 Scoping / speccing": 3,
+        "Backlog": 1,
+        "Prioritized": 2,
+        "⏳ Paused / Waiting": 3,
+        "👟 Scoping / speccing": 4,
         "👷 In tech design": 5,
         "👷 In development / drafting": 6,
         "👟 👷 In testing / polishing": 7,
@@ -145,7 +143,7 @@ STAGE_NUMBERS = defaultdict(
 
 STAGE_COLORS = {
     "Needs triage": "rgba(206, 205, 202, 0.5)",
-    # "Backlog": "rgba(206, 205, 202, 0.5)",
+    "Backlog": "rgba(206, 205, 202, 0.5)",
     "Prioritized": "rgba(206, 205, 202, 0.5)",
     "👟 Scoping / speccing": "rgba(221, 0, 129, 0.2)",
     "👷 In tech design": "rgba(245, 93, 0, 0.2)",
@@ -153,9 +151,7 @@ STAGE_COLORS = {
     "👟 👷 In testing / polishing": "rgba(0, 120, 223, 0.2)",
     "🏁 Ready for launch / publish": "rgba(103, 36, 222, 0.2)",
     "✅ Done / launched / published": "rgba(140, 46, 0, 0.2)",
-    # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
-
 STAGE_SHORT_NAMES = {
     "Needs triage": "Needs triage",
     "Backlog": "Backlog",
@@ -166,7 +162,6 @@ STAGE_SHORT_NAMES = {
     "👟 👷 In testing / polishing": "🧪 Testing",
     "🏁 Ready for launch / publish": "🏁 Ready for launch",
     "✅ Done / launched / published": "✅ Launched",
-    # "❌ Won't fix": "rgba(155, 154, 151, 0.4)",
 }
 
 
@@ -182,7 +177,7 @@ def get_stage_div(stage):
 
 
 def _reverse_sort_by_stage(projects):
-    return sorted(projects, key=lambda x: STAGE_NUMBERS[x.stage], reverse=True)
+    return sorted(projects, key=lambda x: STAGE_SORT[x.stage], reverse=True)
 
 
 def _get_plain_text(rich_text_property):
@@ -206,7 +201,7 @@ def _draw_groups(roadmap_by_group, groups):
 
         for p in _reverse_sort_by_stage(projects):
 
-            if STAGE_NUMBERS[p.stage] >= 2:
+            if STAGE_SORT[p.stage] >= 2:
                 stage = get_stage_div(p.stage)
             else:
                 stage = ""
@@ -240,13 +235,11 @@ st.info(
 results = _get_raw_roadmap()["results"]
 roadmap_by_group = _get_roadmap(results)  # , group_by)
 
-sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT.index(x))
-current_quarter_index = QUARTER_SORT.index(_get_current_quarter_label())
-past_groups = filter(
-    lambda x: QUARTER_SORT.index(x) < current_quarter_index, sorted_groups
-)
+sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT[x])
+current_quarter_index = QUARTER_SORT[_get_current_quarter_label()]
+past_groups = filter(lambda x: QUARTER_SORT[x] < current_quarter_index, sorted_groups)
 future_groups = filter(
-    lambda x: QUARTER_SORT.index(x) >= current_quarter_index, sorted_groups
+    lambda x: QUARTER_SORT[x] >= current_quarter_index, sorted_groups
 )
 
 with st.expander("Show past quarters"):
