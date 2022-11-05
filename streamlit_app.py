@@ -186,49 +186,6 @@ def _get_plain_text(rich_text_property):
     return "".join(part["plain_text"] for part in rich_text_property)
 
 
-def draw():
-    st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
-
-    st.write(
-        """
-        # Streamlit roadmap
-
-        Welcome to our roadmap! :wave:
-
-        This app lists some projects we're either working on or planning for the future. 
-        Plus, there's always more going on behind the scenes — we sometimes like to 
-        surprise you :wink: Our community is the best source of ideas. If you 
-        don't see your favorite feature listed here, let us know in the 
-        [forums](https://discuss.streamlit.io)!
-        """
-    )
-
-    st.write("")
-    st.info(
-        """
-        ⛴ The dates below are our best guesses. We're bullish on them but we can't make any
-        guarantees!
-        """
-    )
-
-    results = _get_raw_roadmap()["results"]
-    roadmap_by_group = _get_roadmap(results)  # , group_by)
-
-    sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT.index(x))
-    current_quarter_index = QUARTER_SORT.index(_get_current_quarter_label())
-    past_groups = filter(
-        lambda x: QUARTER_SORT.index(x) < current_quarter_index, sorted_groups
-    )
-    future_groups = filter(
-        lambda x: QUARTER_SORT.index(x) >= current_quarter_index, sorted_groups
-    )
-
-    with st.expander("Show past quarters"):
-        _draw_groups(roadmap_by_group, past_groups)
-
-    _draw_groups(roadmap_by_group, future_groups)
-
-
 def _draw_groups(roadmap_by_group, groups):
 
     for group in groups:
@@ -254,3 +211,46 @@ def _draw_groups(roadmap_by_group, groups):
 
             if p.public_description:
                 st.markdown(p.public_description)
+
+
+st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
+
+st.write(
+    """
+    # Streamlit roadmap
+
+    Welcome to our roadmap! :wave:
+
+    This app lists some projects we're either working on or planning for the future. 
+    Plus, there's always more going on behind the scenes — we sometimes like to 
+    surprise you :wink: Our community is the best source of ideas. If you 
+    don't see your favorite feature listed here, let us know in the 
+    [forums](https://discuss.streamlit.io)!
+    """
+)
+
+st.write("")
+st.info(
+    """
+    ⛴ The dates below are our best guesses. We're bullish on them but we can't make any
+    guarantees!
+    """
+)
+
+results = _get_raw_roadmap()["results"]
+roadmap_by_group = _get_roadmap(results)  # , group_by)
+
+sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT.index(x))
+current_quarter_index = QUARTER_SORT.index(_get_current_quarter_label())
+past_groups = filter(
+    lambda x: QUARTER_SORT.index(x) < current_quarter_index, sorted_groups
+)
+future_groups = filter(
+    lambda x: QUARTER_SORT.index(x) >= current_quarter_index, sorted_groups
+)
+
+with st.expander("Show past quarters"):
+    _draw_groups(roadmap_by_group, past_groups)
+
+_draw_groups(roadmap_by_group, future_groups)
+
