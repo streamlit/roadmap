@@ -232,7 +232,7 @@ st.write(
 st.info(
     """
     Need a feature that's not on here? 
-    [Let us know by opening GitHub issue!](https://github.com/streamlit/streamlit/issues)
+    [Let us know by opening a GitHub issue!](https://github.com/streamlit/streamlit/issues)
     """,
     icon="👾",
 )
