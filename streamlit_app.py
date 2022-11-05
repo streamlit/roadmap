@@ -6,11 +6,7 @@ import streamlit as st
 from notion_client import Client
 
 st.set_page_config("Roadmap", "https://streamlit.io/favicon.svg")
-
-_DB_ID = "fdd164419a79454f993984b1f8e21f66"
-_the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
-
-_TTL = 24 * 60 * 60
+TTL = 24 * 60 * 60
 
 Project = namedtuple(
     "Project",
@@ -25,11 +21,11 @@ Project = namedtuple(
 )
 
 
-@st.experimental_memo(ttl=_TTL, show_spinner="Fetching roadmap...")
+@st.experimental_memo(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_raw_roadmap():
-    notion = Client(auth=_the_token)
+    notion = Client(auth=st.secrets.notion.token)
     return notion.databases.query(
-        database_id=_DB_ID,
+        database_id=st.secrets.notion.projects_database_id,
         filter={
             "property": "Show on public Streamlit roadmap",
             "checkbox": {"equals": True},
@@ -37,7 +33,7 @@ def _get_raw_roadmap():
     )
 
 
-@st.experimental_memo(ttl=_TTL, show_spinner="Fetching roadmap...")
+@st.experimental_memo(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_roadmap(results):
     roadmap = defaultdict(list)
 
@@ -181,7 +177,6 @@ def _reverse_sort_by_stage(projects):
 
 
 def _get_plain_text(rich_text_property):
-    # st.write(rich_text_property)
     return "".join(part["plain_text"] for part in rich_text_property)
 
 
@@ -244,5 +239,4 @@ future_groups = filter(
 
 with st.expander("Show past quarters"):
     _draw_groups(roadmap_by_group, past_groups)
-
 _draw_groups(roadmap_by_group, future_groups)
