@@ -121,6 +121,9 @@ QUARTER_SORT = {
     "🌈 Future": 11,
 }
 
+# Doing a defaultdict here because if there's a new stage, it's ok to just silently plug 
+# it at the bottom. For quarters above, I'd want the app to show an exception if 
+# something goes wrong (rather than failing silently), so keeping it as a normal dict. 
 STAGE_SORT = defaultdict(
     lambda: -1,
     {
