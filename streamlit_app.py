@@ -5,6 +5,10 @@ from collections import defaultdict, namedtuple
 import streamlit as st
 from notion_client import Client
 
+st.set_page_config(
+    "Roadmap", "https://streamlit.io/images/brand/streamlit-mark-color.png"
+)
+
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
 _the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
 
@@ -102,7 +106,6 @@ def _get_current_quarter_label():
     else:
         fiscal_year = str(now.year + 1)[2:]
 
-    # TODO: Move this outside.
     emoji = QUARTER_TO_EMOJI[quarter_num]
 
     return f"{emoji} Q{quarter_num}/FY{fiscal_year} ({months})"
@@ -124,6 +127,7 @@ QUARTER_SORT = [
     "🌈 Future",
 ]
 
+# TODO: Need to clean these dicts and make sure they are still accurate.
 STAGE_NUMBERS = defaultdict(
     lambda: -1,
     {
