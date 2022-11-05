@@ -6,7 +6,7 @@ import streamlit as st
 from notion_client import Client
 
 st.set_page_config(
-    "Roadmap", "https://streamlit.io/images/brand/streamlit-mark-color.png"
+    "Roadmap", "https://streamlit.io/favicon.svg"
 )
 
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
