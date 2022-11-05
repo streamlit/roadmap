@@ -219,22 +219,18 @@ st.write(
     """
     # Streamlit roadmap
 
-    Welcome to our roadmap! :wave:
-
-    This app lists some projects we're either working on or planning for the future. 
-    Plus, there's always more going on behind the scenes — we sometimes like to 
-    surprise you :wink: Our community is the best source of ideas. If you 
-    don't see your favorite feature listed here, let us know in the 
-    [forums](https://discuss.streamlit.io)!
+    Welcome to our roadmap! 👋 This app shows some projects we're working on or have 
+    planned for the future. Plus, there's always more going on behind the scenes — we 
+    sometimes like to surprise you ✨
     """
 )
 
-st.write("")
 st.info(
     """
-    ⛴ The dates below are our best guesses. We're bullish on them but we can't make any
-    guarantees!
-    """
+    Want a feature that's not on here yet? 
+    [Let us know by opening GitHub issue!](https://github.com/streamlit/streamlit/issues)
+    """,
+    icon="👾",
 )
 
 results = _get_raw_roadmap()["results"]
@@ -253,4 +249,3 @@ with st.expander("Show past quarters"):
     _draw_groups(roadmap_by_group, past_groups)
 
 _draw_groups(roadmap_by_group, future_groups)
-
