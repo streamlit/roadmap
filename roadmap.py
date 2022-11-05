@@ -24,7 +24,7 @@ Project = namedtuple(
 
 
 @st.cache(allow_output_mutation=True, ttl=_TTL)
-def _get_raw_roadmap(only_public=True):
+def _get_raw_roadmap():
     notion = Client(auth=_the_token)
     return notion.databases.query(
         database_id=_DB_ID,
@@ -186,7 +186,7 @@ def _get_plain_text(rich_text_property):
     return "".join(part["plain_text"] for part in rich_text_property)
 
 
-def draw(user_is_internal):
+def draw():
     st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
 
     st.write(
@@ -211,26 +211,7 @@ def draw(user_is_internal):
         """
     )
 
-    group_by = "Quarter"
-    only_public = True
-    only_triaged = True
-    show_private_roadmap = user_is_internal
-
-    if user_is_internal:
-        with st.sidebar:
-            container = st.sidebar.beta_container()
-            show_private_roadmap = not st.checkbox("Show public roadmap", False)
-
-        if show_private_roadmap:
-            with container:
-                # group_by = st.selectbox("Group by", ["Quarter", "Month"])
-
-                st.write("")
-                only_public = st.checkbox("Show only public projects", True)
-                only_triaged = st.checkbox("Show only triaged", True)
-                st.write("")
-
-    results = _get_raw_roadmap(only_public)["results"]
+    results = _get_raw_roadmap()["results"]
     roadmap_by_group = _get_roadmap(results)  # , group_by)
 
     sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT.index(x))
@@ -243,12 +224,12 @@ def draw(user_is_internal):
     )
 
     with st.expander("Show past quarters"):
-        _draw_groups(roadmap_by_group, past_groups, show_private_roadmap)
+        _draw_groups(roadmap_by_group, past_groups)
 
-    _draw_groups(roadmap_by_group, future_groups, show_private_roadmap)
+    _draw_groups(roadmap_by_group, future_groups)
 
 
-def _draw_groups(roadmap_by_group, groups, show_private_roadmap):
+def _draw_groups(roadmap_by_group, groups):
 
     for group in groups:
 
@@ -263,23 +244,13 @@ def _draw_groups(roadmap_by_group, groups, show_private_roadmap):
         st.header(cleaned_group)
 
         for p in _reverse_sort_by_stage(projects):
-            cleaned_id = p.id.replace("-", "")
-            notion_url = f"https://www.notion.so/streamlit/{cleaned_id}"
-
-            if show_private_roadmap:
-                notion_link_str = f" &nbsp; [link]({notion_url})"
-            else:
-                notion_link_str = ""
 
             if STAGE_NUMBERS[p.stage] >= 2:
                 stage = get_stage_div(p.stage)
             else:
                 stage = ""
 
-            st.markdown(
-                f"#### {p.icon} {p.title} {stage} <small>{notion_link_str}</small>",
-                unsafe_allow_html=True,
-            )
+            st.markdown(f"#### {p.icon} {p.title} {stage}", unsafe_allow_html=True)
 
             if p.public_description:
                 st.markdown(p.public_description)
