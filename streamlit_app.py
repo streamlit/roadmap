@@ -227,7 +227,7 @@ st.write(
 
 st.info(
     """
-    Want a feature that's not on here yet? 
+    Need a feature that's not on here? 
     [Let us know by opening GitHub issue!](https://github.com/streamlit/streamlit/issues)
     """,
     icon="👾",
