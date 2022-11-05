@@ -10,7 +10,7 @@ st.set_page_config("Roadmap", "https://streamlit.io/favicon.svg")
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
 _the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
 
-_TTL = 12 * 60 * 60
+_TTL = 24 * 60 * 60
 
 Project = namedtuple(
     "Project",
