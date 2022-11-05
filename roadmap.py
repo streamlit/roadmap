@@ -1,9 +1,10 @@
+import calendar
+import datetime
+from collections import defaultdict, namedtuple
+
+import pandas as pd
 import streamlit as st
 from notion_client import Client
-from collections import namedtuple, defaultdict
-import datetime
-import pandas as pd
-import calendar
 
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
 _the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
@@ -76,7 +77,9 @@ def _get_roadmap(results, show_private_roadmap, group_by):
         props = result["properties"]
 
         title = _get_plain_text(props["Name"]["title"])
-        title = title.replace("(parent project)", "")  # Manually remove (parent project).
+        title = title.replace(
+            "(parent project)", ""
+        )  # Manually remove (parent project).
         if "icon" in result and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
         else:
