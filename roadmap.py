@@ -5,6 +5,8 @@ from collections import defaultdict, namedtuple
 import pandas as pd
 import streamlit as st
 from notion_client import Client
+import re
+
 
 _DB_ID = "fdd164419a79454f993984b1f8e21f66"
 _the_token = st.secrets["notion"]["token"]  # TODO: Fix this in Core
@@ -19,12 +21,13 @@ Project = namedtuple(
         "icon",
         "public_description",
         "stage",
-        "start_date",
-        "end_date",
+        "quarter",
+        # "start_date",
+        # "end_date",
     ],
 )
-TimeGrouping = namedtuple("TimeGrouping", ["year", "number"])
-_FUTURE = TimeGrouping(10000, 10000)
+# TimeGrouping = namedtuple("TimeGrouping", ["year", "number"])
+# _FUTURE = TimeGrouping(10000, 10000)
 
 
 @st.cache(allow_output_mutation=True, ttl=_TTL)
@@ -47,22 +50,26 @@ def _get_raw_roadmap(only_public=True):
         database_id=_DB_ID,
         filter={
             "and": [
-                {
-                    "or": [
-                        {
-                            "property": "End date",
-                            "date": {
-                                "after": _get_last_quarter_date_str(),
-                            },
-                        },
-                        {
-                            "property": "End date",
-                            "date": {
-                                "is_empty": True,
-                            },
-                        },
-                    ]
-                },
+                # TODO: Hiding this for now, since we don't want to filter on dates any 
+                # more, but on the "Planned quarter" select. We could add a simple filter
+                # on end date here to filter out very old projects but I don't think
+                # it's necessary. 
+                # {
+                #     "or": [
+                #         {
+                #             "property": "End date",
+                #             "date": {
+                #                 "after": _get_last_quarter_date_str(),
+                #             },
+                #         },
+                #         {
+                #             "property": "End date",
+                #             "date": {
+                #                 "is_empty": True,
+                #             },
+                #         },
+                #     ]
+                # },
                 *public_filter,
             ],
         },
@@ -70,16 +77,15 @@ def _get_raw_roadmap(only_public=True):
 
 
 @st.cache(allow_output_mutation=True, ttl=_TTL)
-def _get_roadmap(results, show_private_roadmap, group_by):
+def _get_roadmap(results, show_private_roadmap):
     roadmap = defaultdict(list)
 
     for result in results:
         props = result["properties"]
 
         title = _get_plain_text(props["Name"]["title"])
-        title = title.replace(
-            "(parent project)", ""
-        )  # Manually remove (parent project).
+        # Manually remove "(parent project)" from titles.
+        title = title.replace("(parent project)", "") 
         if "icon" in result and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
         else:
@@ -90,28 +96,34 @@ def _get_roadmap(results, show_private_roadmap, group_by):
             stage = props["Stage"]["select"]["name"]
         else:
             stage = ""
-
-        if (
-            "Schedule" in props
-            and "date" in props["Schedule"]
-            and props["Schedule"]["date"] is not None
-        ):
-            start_date = props["Schedule"]["date"]["start"]
-            scheduled_end_date = props["Schedule"]["date"]["end"]
+            
+        if "Planned quarter" in props and props["Planned quarter"]["select"] is not None:
+            # st.write(props["Planned quarter"])
+            quarter = props["Planned quarter"]["select"]["name"]
         else:
-            start_date = None
-            scheduled_end_date = None
+            quarter = "🌈 Future"
 
-        end_date = scheduled_end_date
+        # if (
+        #     "Schedule" in props
+        #     and "date" in props["Schedule"]
+        #     and props["Schedule"]["date"] is not None
+        # ):
+        #     start_date = props["Schedule"]["date"]["start"]
+        #     scheduled_end_date = props["Schedule"]["date"]["end"]
+        # else:
+        #     start_date = None
+        #     scheduled_end_date = None
 
-        if (
-            "Public end date" in props
-            and "date" in props["Public end date"]
-            and props["Public end date"]["date"] is not None
-        ):
+        # end_date = scheduled_end_date
 
-            public_end_date = props["Public end date"]["date"]["start"]
-            end_date = public_end_date or scheduled_end_date
+        # if (
+        #     "Public end date" in props
+        #     and "date" in props["Public end date"]
+        #     and props["Public end date"]["date"] is not None
+        # ):
+
+        #     public_end_date = props["Public end date"]["date"]["start"]
+        #     end_date = public_end_date or scheduled_end_date
 
         p = Project(
             id=result["id"],
@@ -119,48 +131,94 @@ def _get_roadmap(results, show_private_roadmap, group_by):
             icon=icon,
             public_description=public_description,
             stage=stage,
-            start_date=start_date,
-            end_date=end_date,
+            quarter=quarter,
+            # start_date=start_date,
+            # end_date=end_date,
         )
 
-        if not end_date:
-            time_group = _FUTURE
-        elif group_by == "Quarter":
-            time_group = _get_quarter_for_iso_date(end_date)
-        else:
-            time_group = _get_month_year_for_iso_date(end_date)
+        # if not end_date:
+        #     time_group = _FUTURE
+        # elif group_by == "Quarter":
+        #     time_group = _get_quarter_for_iso_date(end_date)
+        # else:
+        #     time_group = _get_month_year_for_iso_date(end_date)
 
-        roadmap[time_group].append(p)
+        roadmap[quarter].append(p)
 
     return roadmap
 
 
-def _get_last_quarter_date_str():
-    now = datetime.datetime.now()
-    this_month = now.month
-    this_quarter_num = (now.month - 1) // 3 + 1
-    prev_quarter_num = (this_quarter_num - 1) % 4
-    prev_quarter_year = now.year
-    if prev_quarter_num == 0:
-        prev_quarter_num = 4
-        prev_quarter_year -= 1
-    prev_quarter_month = (prev_quarter_num - 1) * 3 + 1
-    prev_quarter = datetime.datetime(
-        month=prev_quarter_month, day=1, year=prev_quarter_year
-    )
-    return prev_quarter.isoformat()
+# def _get_last_quarter_date_str():
+#     now = datetime.datetime.now()
+#     this_month = now.month
+#     this_quarter_num = (now.month - 1) // 3 + 1
+#     prev_quarter_num = (this_quarter_num - 1) % 4
+#     prev_quarter_year = now.year
+#     if prev_quarter_num == 0:
+#         prev_quarter_num = 4
+#         prev_quarter_year -= 1
+#     prev_quarter_month = (prev_quarter_num - 1) * 3 + 1
+#     prev_quarter = datetime.datetime(
+#         month=prev_quarter_month, day=1, year=prev_quarter_year
+#     )
+#     return prev_quarter.isoformat()
 
 
-def _get_quarter_for_iso_date(date_iso):
-    date = datetime.datetime.fromisoformat(date_iso)
-    quarter_num = (date.month - 1) // 3 + 1
-    return TimeGrouping(number=quarter_num, year=date.year)
+# def _get_quarter_for_iso_date(date_iso):
+#     date = datetime.datetime.fromisoformat(date_iso)
+#     quarter_num = (date.month - 1) // 3 + 1
+#     return TimeGrouping(number=quarter_num, year=date.year)
 
 
-def _get_month_year_for_iso_date(date_iso):
-    date = datetime.datetime.fromisoformat(date_iso)
-    return TimeGrouping(number=date.month, year=date.year)
+# def _get_month_year_for_iso_date(date_iso):
+#     date = datetime.datetime.fromisoformat(date_iso)
+#     return TimeGrouping(number=date.month, year=date.year)
 
+def _get_current_quarter_label():
+        now = datetime.datetime.now()
+        
+        # Note that we are using Snowflake fiscal quarters, i.e. Q1 starts in February. 
+        if now.month == 1:
+            quarter_num = 4
+            months = f"Nov {now.year - 1} - Jan {now.year}"
+        if now.month >= 2 and now.month <= 4:
+            quarter_num = 1
+            months = f"Feb - Apr {now.year}"
+        elif now.month >= 5 and now.month <= 7:
+            quarter_num = 2
+            months = f"May - Jul {now.year}"
+        elif now.month >= 8 and now.month <= 10:
+            quarter_num = 3
+            months = f"Aug - Oct {now.year}"
+        elif now.month >= 11 and now.month <= 12:
+            quarter_num = 4
+            months = f"Nov {now.year} - Jan {now.year + 1}"
+        
+        if now.month == 1:
+            fiscal_year = str(now.year)[2:]
+        else:
+            fiscal_year = str(now.year + 1)[2:]
+            
+        # TODO: Move this outside.
+        QUARTER_TO_EMOJI = {1: "🌱", 2: "☀️", 3: "🍂", 4: "⛄️"}
+        emoji = QUARTER_TO_EMOJI[quarter_num]
+        
+        return f"{emoji} Q{quarter_num}/FY{fiscal_year} ({months})"
+
+QUARTER_SORT = [
+    "☀️ Q2/FY23 (May - Jul 2022)", 
+    "🍂 Q3/FY23 (Aug - Oct 2022)",
+    "⛄️ Q4/FY23 (Nov 2022 - Jan 2023)",
+    "🌱 Q1/FY24 (Feb - Apr 2023)",
+    "☀️ Q2/FY24 (May - Jul 2023)",
+    "🍂 Q3/FY24 (Aug - Oct 2023)",
+    "⛄️ Q4/FY24 (Nov 2023 - Jan 2024)",
+    "🌱 Q1/FY25 (Feb - Apr 2024)",
+    "☀️ Q2/FY25 (May - Jul 2024)",
+    "🍂 Q3/FY25 (Aug - Oct 2024)",
+    "⛄️ Q4/FY25 (Nov 2024 - Jan 2025)",
+    "🌈 Future",
+]
 
 STAGE_NUMBERS = defaultdict(
     lambda: -1,
@@ -261,7 +319,7 @@ def draw(user_is_internal):
 
         if show_private_roadmap:
             with container:
-                group_by = st.selectbox("Group by", ["Quarter", "Month"])
+                # group_by = st.selectbox("Group by", ["Quarter", "Month"])
 
                 st.write("")
                 only_public = st.checkbox("Show only public projects", True)
@@ -269,21 +327,29 @@ def draw(user_is_internal):
                 st.write("")
 
     results = _get_raw_roadmap(only_public)["results"]
-    roadmap_by_group = _get_roadmap(results, show_private_roadmap, group_by)
+    roadmap_by_group = _get_roadmap(results, show_private_roadmap)#, group_by)
+    
+    sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT.index(x))
+    current_quarter_index = QUARTER_SORT.index(_get_current_quarter_label())
+    past_groups = filter(lambda x: QUARTER_SORT.index(x) < current_quarter_index, sorted_groups)
+    future_groups = filter(lambda x: QUARTER_SORT.index(x) >= current_quarter_index, sorted_groups)
+    
+    with st.expander("Show past quarters"):
+        _draw_groups(roadmap_by_group, past_groups, show_private_roadmap)
+        
+    _draw_groups(roadmap_by_group, future_groups, show_private_roadmap)
 
-    for group in sorted(roadmap_by_group.keys()):
+        
+        
+def _draw_groups(roadmap_by_group, groups, show_private_roadmap):
 
-        st.write("")
-        st.write("")
-
-        if group == _FUTURE:
-            st.header(f"Future 🌈")
-        elif group_by == "Quarter":
-            st.header(f"Q{group.number} {group.year}")
-        else:
-            st.header(f"{calendar.month_name[group.number]} {group.year}")
+    for group in groups:
 
         projects = roadmap_by_group[group]
+        cleaned_group = re.sub(r"Q./FY..", "", group).replace("(", "").replace(")", "").replace("-", "–")
+        st.write("")
+        st.header(cleaned_group)
+
 
         for p in _reverse_sort_by_stage(projects):
             cleaned_id = p.id.replace("-", "")
