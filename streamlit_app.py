@@ -200,7 +200,7 @@ def _draw_groups(roadmap_by_group, groups):
 
         for p in _reverse_sort_by_stage(projects):
 
-            if STAGE_SORT[p.stage] >= 3:
+            if STAGE_SORT[p.stage] >= 4:
                 stage = get_stage_div(p.stage)
             else:
                 stage = ""
