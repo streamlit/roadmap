@@ -121,9 +121,9 @@ QUARTER_SORT = {
     "🌈 Future": 11,
 }
 
-# Doing a defaultdict here because if there's a new stage, it's ok to just silently plug 
-# it at the bottom. For quarters above, I'd want the app to show an exception if 
-# something goes wrong (rather than failing silently), so keeping it as a normal dict. 
+# Doing a defaultdict here because if there's a new stage, it's ok to just silently plug
+# it at the bottom. For quarters above, I'd want the app to show an exception if
+# something goes wrong (rather than failing silently), so keeping it as a normal dict.
 STAGE_SORT = defaultdict(
     lambda: -1,
     {
@@ -170,7 +170,7 @@ def get_stage_div(stage):
     return (
         f'<div style="background-color: {color}; padding: 1px 6px; '
         "margin: 0 5px; display: inline; vertical-align: middle; "
-        f'border-radius: 3px; font-size: 0.75rem; font-weight: 400; '
+        f"border-radius: 3px; font-size: 0.75rem; font-weight: 400; "
         f'white-space: nowrap">{short_name}'
         "</div>"
     )
@@ -200,7 +200,7 @@ def _draw_groups(roadmap_by_group, groups):
 
         for p in _reverse_sort_by_stage(projects):
 
-            if STAGE_SORT[p.stage] >= 2:
+            if STAGE_SORT[p.stage] >= 3:
                 stage = get_stage_div(p.stage)
             else:
                 stage = ""
