@@ -41,8 +41,11 @@ def _get_roadmap(results):
         props = result["properties"]
 
         title = _get_plain_text(props["Name"]["title"])
-        # Manually remove "(parent project)" from titles.
+        # Manually remove "(parent project)" and "(release)" and "(experimental release)" from titles.
+        # TODO: Could extend this to remove everything in brackets. 
         title = title.replace("(parent project)", "")
+        title = title.replace("(release)", "")
+        title = title.replace("(experimental release)", "")
         if "icon" in result and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
         else:
