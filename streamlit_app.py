@@ -58,10 +58,10 @@ def _get_roadmap(results):
             stage = ""
 
         if (
-            "Planned quarter" in props
-            and props["Planned quarter"]["select"] is not None
+            "Quarter" in props
+            and props["Quarter"]["select"] is not None
         ):
-            quarter = props["Planned quarter"]["select"]["name"]
+            quarter = props["Quarter"]["select"]["name"]
         else:
             quarter = "🌈 Future"
 
