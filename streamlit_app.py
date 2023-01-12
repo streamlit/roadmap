@@ -46,6 +46,9 @@ def _get_roadmap(results):
         title = title.replace("(parent project)", "")
         title = title.replace("(release)", "")
         title = title.replace("(experimental release)", "")
+        title = title.replace("(PrPr)", "")
+        title = title.replace("(PuPr)", "")
+        title = title.replace("(GA)", "")
         if "icon" in result and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
         else:
