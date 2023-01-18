@@ -141,7 +141,7 @@ STAGE_SORT = defaultdict(
         "👟 Scoping / speccing": 4,
         "👷 In tech design": 5,
         "👷 In development / drafting": 6,
-        "👟 👷 In testing / polishing": 7,
+        "👟 👷 In testing / review": 7,
         "🏁 Ready for launch / publish": 8,
         "✅ Done / launched / published": 9,
     },
@@ -154,7 +154,7 @@ STAGE_COLORS = {
     "👟 Scoping / speccing": "rgba(221, 0, 129, 0.2)",
     "👷 In tech design": "rgba(245, 93, 0, 0.2)",
     "👷 In development / drafting": "rgba(0, 135, 107, 0.2)",
-    "👟 👷 In testing / polishing": "rgba(0, 120, 223, 0.2)",
+    "👟 👷 In testing / review": "rgba(0, 120, 223, 0.2)",
     "🏁 Ready for launch / publish": "rgba(103, 36, 222, 0.2)",
     "✅ Done / launched / published": "rgba(140, 46, 0, 0.2)",
 }
@@ -165,7 +165,7 @@ STAGE_SHORT_NAMES = {
     "👟 Scoping / speccing": "👟 Planning",
     "👷 In tech design": "👟 Planning",
     "👷 In development / drafting": "👷 Development",
-    "👟 👷 In testing / polishing": "🧪 Testing",
+    "👟 👷 In testing / review": "🧪 Testing",
     "🏁 Ready for launch / publish": "🏁 Ready for launch",
     "✅ Done / launched / published": "✅ Launched",
 }
