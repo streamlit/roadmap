@@ -67,7 +67,7 @@ def _get_roadmap(results):
         ):
             quarter = props["Quarter"]["select"]["name"]
         else:
-            quarter = "🌈 Future"
+            quarter = "Future"
 
         p = Project(
             id=result["id"],
@@ -107,25 +107,22 @@ def _get_current_quarter_label():
     else:
         fiscal_year = str(now.year + 1)[2:]
 
-    emoji = QUARTER_TO_EMOJI[quarter_num]
-
-    return f"{emoji} Q{quarter_num}/FY{fiscal_year} ({months})"
+    return f"Q{quarter_num}/FY{fiscal_year} ({months})"
 
 
-QUARTER_TO_EMOJI = {1: "🌱", 2: "☀️", 3: "🍂", 4: "⛄️"}
 QUARTER_SORT = {
-    "☀️ Q2/FY23 (May - Jul 2022)": 0,
-    "🍂 Q3/FY23 (Aug - Oct 2022)": 1,
-    "⛄️ Q4/FY23 (Nov 2022 - Jan 2023)": 2,
-    "🌱 Q1/FY24 (Feb - Apr 2023)": 3,
-    "☀️ Q2/FY24 (May - Jul 2023)": 4,
-    "🍂 Q3/FY24 (Aug - Oct 2023)": 5,
-    "⛄️ Q4/FY24 (Nov 2023 - Jan 2024)": 6,
-    "🌱 Q1/FY25 (Feb - Apr 2024)": 7,
-    "☀️ Q2/FY25 (May - Jul 2024)": 8,
-    "🍂 Q3/FY25 (Aug - Oct 2024)": 9,
-    "⛄️ Q4/FY25 (Nov 2024 - Jan 2025)": 10,
-    "🌈 Future": 11,
+    "Q2/FY23 (May - Jul 2022)": 0,
+    "Q3/FY23 (Aug - Oct 2022)": 1,
+    "Q4/FY23 (Nov 2022 - Jan 2023)": 2,
+    "Q1/FY24 (Feb - Apr 2023)": 3,
+    "Q2/FY24 (May - Jul 2023)": 4,
+    "Q3/FY24 (Aug - Oct 2023)": 5,
+    "Q4/FY24 (Nov 2023 - Jan 2024)": 6,
+    "Q1/FY25 (Feb - Apr 2024)": 7,
+    "Q2/FY25 (May - Jul 2024)": 8,
+    "Q3/FY25 (Aug - Oct 2024)": 9,
+    "Q4/FY25 (Nov 2024 - Jan 2025)": 10,
+    "Future": 11,
 }
 
 # Doing a defaultdict here because if there's a new stage, it's ok to just silently plug
@@ -171,15 +168,15 @@ STAGE_SHORT_NAMES = {
 }
 
 
-def get_stage_div(stage):
+def _get_stage_tag(stage):
     color = STAGE_COLORS.get(stage, "rgba(206, 205, 202, 0.5)")
     short_name = STAGE_SHORT_NAMES.get(stage, stage)
     return (
-        f'<div style="background-color: {color}; padding: 1px 6px; '
+        f'<span style="background-color: {color}; padding: 1px 6px; '
         "margin: 0 5px; display: inline; vertical-align: middle; "
         f"border-radius: 3px; font-size: 0.75rem; font-weight: 400; "
         f'white-space: nowrap">{short_name}'
-        "</div>"
+        "</span>"
     )
 
 
@@ -189,6 +186,9 @@ def _reverse_sort_by_stage(projects):
 
 def _get_plain_text(rich_text_property):
     return "".join(part["plain_text"] for part in rich_text_property)
+
+
+SPACE = "&nbsp;"
 
 
 def _draw_groups(roadmap_by_group, groups):
@@ -208,14 +208,19 @@ def _draw_groups(roadmap_by_group, groups):
         for p in _reverse_sort_by_stage(projects):
 
             if STAGE_SORT[p.stage] >= 4:
-                stage = get_stage_div(p.stage)
+                stage = _get_stage_tag(p.stage)
             else:
                 stage = ""
 
-            st.markdown(f"#### {p.icon} {p.title} {stage}", unsafe_allow_html=True)
+            description = ""
 
             if p.public_description:
-                st.markdown(p.public_description)
+                description = f"<br /><small style='color: #808495'>{p.public_description}</small>"
+
+            a, b = st.columns([0.03, 0.97])
+            a.markdown(p.icon)
+            b.markdown(f"<strong>{p.title}</strong> {stage}{description}", unsafe_allow_html=True)
+
 
 
 st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
@@ -224,23 +229,23 @@ st.write(
     """
     # Streamlit roadmap
 
-    Welcome to our roadmap! 👋 This app shows some projects we're working on or have 
-    planned for the future. Plus, there's always more going on behind the scenes — we 
+    Welcome to our roadmap! 👋 This app shows some projects we're working on or have
+    planned for the future. Plus, there's always more going on behind the scenes — we
     sometimes like to surprise you ✨
     """
 )
 
 st.info(
     """
-    Need a feature that's not on here? 
+    Need a feature that's not on here?
     [Let us know by opening a GitHub issue!](https://github.com/streamlit/streamlit/issues)
     """,
     icon="👾",
 )
 st.success(
     """
-    Read [the blog post on Streamlit's 2023 roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/) 
-    to understand our broader vision. 
+    Read [the blog post on Streamlit's 2023 roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
+    to understand our broader vision.
     """,
     icon="🗺",
 )
