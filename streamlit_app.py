@@ -250,9 +250,9 @@ roadmap_by_group = _get_roadmap(results)  # , group_by)
 
 sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT[x])
 current_quarter_index = QUARTER_SORT[_get_current_quarter_label()]
-past_groups = filter(lambda x: QUARTER_SORT[x] < current_quarter_index - 1, sorted_groups)
+past_groups = filter(lambda x: QUARTER_SORT[x] < current_quarter_index, sorted_groups)
 future_groups = filter(
-    lambda x: QUARTER_SORT[x] >= current_quarter_index - 1, sorted_groups
+    lambda x: QUARTER_SORT[x] >= current_quarter_index, sorted_groups
 )
 
 with st.expander("Show past quarters"):
