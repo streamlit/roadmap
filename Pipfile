@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-streamlit = "*"
+streamlit = ">=1.20"
 notion-client = "*"
 
 [dev-packages]
