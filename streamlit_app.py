@@ -21,19 +21,19 @@ Project = namedtuple(
 )
 
 
-@st.experimental_memo(ttl=TTL, show_spinner="Fetching roadmap...")
+@st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_raw_roadmap():
     notion = Client(auth=st.secrets.notion.token)
     return notion.databases.query(
         database_id=st.secrets.notion.projects_database_id,
         filter={
-            "property": "Show on public Streamlit roadmap",
+            "property": "[temp] Show on SiS Public Roadmap",
             "checkbox": {"equals": True},
         },
     )
 
 
-@st.experimental_memo(ttl=TTL, show_spinner="Fetching roadmap...")
+@st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_roadmap(results):
     roadmap = defaultdict(list)
 
@@ -50,7 +50,7 @@ def _get_roadmap(results):
         title = title.replace("(PuPr)", "")
         title = title.replace("(GA)", "")
         title = title.replace(" - FKA st.database", "")
-        if "icon" in result and result["icon"]["type"] == "emoji":
+        if "icon" in result and result["icon"] != None and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
         else:
             icon = "🏳️"
@@ -227,7 +227,7 @@ st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
 
 st.write(
     """
-    # Streamlit roadmap
+    # Streamlit-in-Snowflake roadmap
 
     Welcome to our roadmap! 👋 This app shows some projects we're working on or have
     planned for the future. Plus, there's always more going on behind the scenes — we
@@ -235,20 +235,20 @@ st.write(
     """
 )
 
-st.info(
-    """
-    Need a feature that's not on here?
-    [Let us know by opening a GitHub issue!](https://github.com/streamlit/streamlit/issues)
-    """,
-    icon="👾",
-)
-st.success(
-    """
-    Read [the blog post on Streamlit's 2023 roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
-    to understand our broader vision.
-    """,
-    icon="🗺",
-)
+# st.info(
+#     """
+#     Need a feature that's not on here?
+#     [Let us know by opening a GitHub issue!](https://github.com/streamlit/streamlit/issues)
+#     """,
+#     icon="👾",
+# )
+# st.success(
+#     """
+#     Read [the blog post on Streamlit's 2023 roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
+#     to understand our broader vision.
+#     """,
+#     icon="🗺",
+# )
 
 results = _get_raw_roadmap()["results"]
 roadmap_by_group = _get_roadmap(results)  # , group_by)
