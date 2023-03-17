@@ -227,28 +227,13 @@ st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
 
 st.write(
     """
-    # Streamlit-in-Snowflake roadmap
+    # Streamlit-in-Snowflake(SiS) roadmap
 
     Welcome to our roadmap! 👋 This app shows some projects we're working on or have
     planned for the future. Plus, there's always more going on behind the scenes — we
     sometimes like to surprise you ✨
     """
 )
-
-# st.info(
-#     """
-#     Need a feature that's not on here?
-#     [Let us know by opening a GitHub issue!](https://github.com/streamlit/streamlit/issues)
-#     """,
-#     icon="👾",
-# )
-# st.success(
-#     """
-#     Read [the blog post on Streamlit's 2023 roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
-#     to understand our broader vision.
-#     """,
-#     icon="🗺",
-# )
 
 results = _get_raw_roadmap()["results"]
 roadmap_by_group = _get_roadmap(results)  # , group_by)
