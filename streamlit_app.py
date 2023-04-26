@@ -27,7 +27,7 @@ def _get_raw_roadmap():
     return notion.databases.query(
         database_id=st.secrets.notion.projects_database_id,
         filter={
-            "property": "[temp] Show on SiS Public Roadmap",
+            "property": "Show on SiS Public Roadmap",
             "checkbox": {"equals": True},
         },
     )
