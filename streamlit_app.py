@@ -174,7 +174,7 @@ def _get_stage_tag(stage):
     return (
         f'<span style="background-color: {color}; padding: 1px 6px; '
         "margin: 0 5px; display: inline; vertical-align: middle; "
-        f"border-radius: 3px; font-size: 0.75rem; font-weight: 400; "
+        f"border-radius: 0.25rem; font-size: 0.75rem; font-weight: 400; "
         f'white-space: nowrap">{short_name}'
         "</span>"
     )
