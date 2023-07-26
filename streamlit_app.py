@@ -21,7 +21,7 @@ Project = namedtuple(
 )
 
 
-@st.experimental_memo(ttl=TTL, show_spinner="Fetching roadmap...")
+@st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_raw_roadmap():
     notion = Client(auth=st.secrets.notion.token)
     return notion.databases.query(
@@ -33,7 +33,7 @@ def _get_raw_roadmap():
     )
 
 
-@st.experimental_memo(ttl=TTL, show_spinner="Fetching roadmap...")
+@st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_roadmap(results):
     roadmap = defaultdict(list)
 
