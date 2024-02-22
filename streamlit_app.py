@@ -245,9 +245,10 @@ st.info(
     """,
     icon="👾",
 )
+
 st.success(
     """
-    Read [the blog post on Streamlit's 2023 roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
+    Read [the blog post on Streamlit's roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
     to understand our broader vision.
     """,
     icon="🗺",
