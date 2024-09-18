@@ -24,38 +24,59 @@ Project = namedtuple(
 @st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_raw_roadmap():
     notion = Client(auth=st.secrets.notion.token)
-    six_months_ago = (datetime.datetime.now() - datetime.timedelta(days=180)).isoformat()
-    # TODO: This returns max 100 items. We should never hit that limit in practice
-    # because we're excluding projects older than 6 months. But if some items are
-    # not showing on the roadmap, this is probably the reason!
-    return notion.databases.query(
-        database_id=st.secrets.notion.projects_database_id,
-        filter={
-            "and": [
-                {
-                    "property": "Show on public Streamlit roadmap",
-                    "checkbox": {"equals": True},
-                },
-                {
-                    "or": [
-                        {
-                            "property": "End date",
-                            "date": {"on_or_after": six_months_ago},
-                        },
-                        {
-                            "property": "End date",
-                            "date": {"is_empty": True},
-                        },
-                    ]
-                },
-            ]
-        },
-    )
+    
+    # Only retrieve projects with an end date in the last twelve months, so we
+    # don't have too many items (which slow down the app + make it look cluttered).
+    twelve_months_ago = (datetime.datetime.now() - datetime.timedelta(days=365)).isoformat()
+    
+    # We need this function to handle pagination because the Notion API
+    # limits results to 100 items per request. This ensures we get all items
+    # that match our filter, even if there are more than 100.
+    def fetch_all_results(query_func, **kwargs):
+        results = []
+        has_more = True
+        next_cursor = None
+        
+        while has_more:
+            response = query_func(**kwargs, start_cursor=next_cursor)
+            results.extend(response["results"])
+            has_more = response["has_more"]
+            next_cursor = response["next_cursor"]
+        
+        return results
+
+    return {
+        "results": fetch_all_results(
+            notion.databases.query,
+            database_id=st.secrets.notion.projects_database_id,
+            filter={
+                "and": [
+                    {
+                        "property": "Show on public Streamlit roadmap",
+                        "checkbox": {"equals": True},
+                    },
+                    {
+                        "or": [
+                            {
+                                "property": "End date",
+                                "date": {"on_or_after": twelve_months_ago},
+                            },
+                            {
+                                "property": "End date",
+                                "date": {"is_empty": True},
+                            },
+                        ]
+                    },
+                ]
+            },
+        )
+    }
 
 
 @st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_roadmap(results):
     roadmap = defaultdict(list)
+    st.write(len(results))
 
     for result in results:
         props = result["properties"]
