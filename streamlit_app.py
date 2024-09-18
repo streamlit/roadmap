@@ -76,7 +76,6 @@ def _get_raw_roadmap():
 @st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_roadmap(results):
     roadmap = defaultdict(list)
-    st.write(len(results))
 
     for result in results:
         props = result["properties"]
