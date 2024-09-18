@@ -24,11 +24,31 @@ Project = namedtuple(
 @st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_raw_roadmap():
     notion = Client(auth=st.secrets.notion.token)
+    six_months_ago = (datetime.datetime.now() - datetime.timedelta(days=180)).isoformat()
+    # TODO: This returns max 100 items. We should never hit that limit in practice
+    # because we're excluding projects older than 6 months. But if some items are
+    # not showing on the roadmap, this is probably the reason!
     return notion.databases.query(
         database_id=st.secrets.notion.projects_database_id,
         filter={
-            "property": "Show on public Streamlit roadmap",
-            "checkbox": {"equals": True},
+            "and": [
+                {
+                    "property": "Show on public Streamlit roadmap",
+                    "checkbox": {"equals": True},
+                },
+                {
+                    "or": [
+                        {
+                            "property": "End date",
+                            "date": {"on_or_after": six_months_ago},
+                        },
+                        {
+                            "property": "End date",
+                            "date": {"is_empty": True},
+                        },
+                    ]
+                },
+            ]
         },
     )
 
