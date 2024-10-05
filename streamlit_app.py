@@ -150,25 +150,6 @@ def _get_current_quarter_label():
     return f"FY{fiscal_year}/Q{quarter_num} ({months})"
 
 
-QUARTER_SORT = {
-    "FY23/Q2 (May - Jul 2022)": 0,
-    "FY23/Q3 (Aug - Oct 2022)": 1,
-    "FY23/Q4 (Nov 2022 - Jan 2023)": 2,
-    "FY24/Q1 (Feb - Apr 2023)": 3,
-    "FY24/Q2 (May - Jul 2023)": 4,
-    "FY24/Q3 (Aug - Oct 2023)": 5,
-    "FY24/Q4 (Nov 2023 - Jan 2024)": 6,
-    "FY25/Q1 (Feb - Apr 2024)": 7,
-    "FY25/Q2 (May - Jul 2024)": 8,
-    "FY25/Q3 (Aug - Oct 2024)": 9,
-    "FY25/Q4 (Nov 2024 - Jan 2025)": 10,
-    "FY26/Q1 (Feb - Apr 2025)": 11,
-    "FY26/Q2 (May - Jul 2025)": 12,
-    "FY26/Q3 (Aug - Oct 2025)": 13,
-    "FY26/Q4 (Nov 2025 - Jan 2026)": 14,
-    "Future": 15,
-}
-
 # Doing a defaultdict here because if there's a new stage, it's ok to just silently plug
 # it at the bottom. For quarters above, I'd want the app to show an exception if
 # something goes wrong (rather than failing silently), so keeping it as a normal dict.
@@ -299,14 +280,12 @@ st.success(
 )
 
 results = _get_raw_roadmap()["results"]
-roadmap_by_group = _get_roadmap(results)  # , group_by)
+roadmap_by_group = _get_roadmap(results)
 
-sorted_groups = sorted(roadmap_by_group.keys(), key=lambda x: QUARTER_SORT[x])
-current_quarter_index = QUARTER_SORT[_get_current_quarter_label()]
-past_groups = filter(lambda x: QUARTER_SORT[x] < current_quarter_index, sorted_groups)
-future_groups = filter(
-    lambda x: QUARTER_SORT[x] >= current_quarter_index, sorted_groups
-)
+sorted_groups = sorted(roadmap_by_group.keys())
+current_quarter = _get_current_quarter_label()
+past_groups = [group for group in sorted_groups if group < current_quarter]
+future_groups = [group for group in sorted_groups if group >= current_quarter]
 
 with st.expander("Show past quarters"):
     _draw_groups(roadmap_by_group, past_groups)
