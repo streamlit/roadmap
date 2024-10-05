@@ -147,22 +147,26 @@ def _get_current_quarter_label():
     else:
         fiscal_year = str(now.year + 1)[2:]
 
-    return f"Q{quarter_num}/FY{fiscal_year} ({months})"
+    return f"FY{fiscal_year}/Q{quarter_num} ({months})"
 
 
 QUARTER_SORT = {
-    "Q2/FY23 (May - Jul 2022)": 0,
-    "Q3/FY23 (Aug - Oct 2022)": 1,
-    "Q4/FY23 (Nov 2022 - Jan 2023)": 2,
-    "Q1/FY24 (Feb - Apr 2023)": 3,
-    "Q2/FY24 (May - Jul 2023)": 4,
-    "Q3/FY24 (Aug - Oct 2023)": 5,
-    "Q4/FY24 (Nov 2023 - Jan 2024)": 6,
-    "Q1/FY25 (Feb - Apr 2024)": 7,
-    "Q2/FY25 (May - Jul 2024)": 8,
-    "Q3/FY25 (Aug - Oct 2024)": 9,
-    "Q4/FY25 (Nov 2024 - Jan 2025)": 10,
-    "Future": 11,
+    "FY23/Q2 (May - Jul 2022)": 0,
+    "FY23/Q3 (Aug - Oct 2022)": 1,
+    "FY23/Q4 (Nov 2022 - Jan 2023)": 2,
+    "FY24/Q1 (Feb - Apr 2023)": 3,
+    "FY24/Q2 (May - Jul 2023)": 4,
+    "FY24/Q3 (Aug - Oct 2023)": 5,
+    "FY24/Q4 (Nov 2023 - Jan 2024)": 6,
+    "FY25/Q1 (Feb - Apr 2024)": 7,
+    "FY25/Q2 (May - Jul 2024)": 8,
+    "FY25/Q3 (Aug - Oct 2024)": 9,
+    "FY25/Q4 (Nov 2024 - Jan 2025)": 10,
+    "FY26/Q1 (Feb - Apr 2025)": 11,
+    "FY26/Q2 (May - Jul 2025)": 12,
+    "FY26/Q3 (Aug - Oct 2025)": 13,
+    "FY26/Q4 (Nov 2025 - Jan 2026)": 14,
+    "Future": 15,
 }
 
 # Doing a defaultdict here because if there's a new stage, it's ok to just silently plug
@@ -240,7 +244,7 @@ def _draw_groups(roadmap_by_group, groups):
 
         projects = roadmap_by_group[group]
         cleaned_group = (
-            re.sub(r"Q./FY..", "", group)
+            re.sub(r"FY../Q.", "", group)
             .replace("(", "")
             .replace(")", "")
             .replace("-", "–")
