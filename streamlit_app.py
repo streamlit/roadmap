@@ -24,11 +24,13 @@ Project = namedtuple(
 @st.cache_data(ttl=TTL, show_spinner="Fetching roadmap...")
 def _get_raw_roadmap():
     notion = Client(auth=st.secrets.notion.token)
-    
+
     # Only retrieve projects with an end date in the last twelve months, so we
     # don't have too many items (which slow down the app + make it look cluttered).
-    twelve_months_ago = (datetime.datetime.now() - datetime.timedelta(days=365)).isoformat()
-    
+    twelve_months_ago = (
+        datetime.datetime.now() - datetime.timedelta(days=365)
+    ).isoformat()
+
     # We need this function to handle pagination because the Notion API
     # limits results to 100 items per request. This ensures we get all items
     # that match our filter, even if there are more than 100.
@@ -36,13 +38,13 @@ def _get_raw_roadmap():
         results = []
         has_more = True
         next_cursor = None
-        
+
         while has_more:
             response = query_func(**kwargs, start_cursor=next_cursor)
             results.extend(response["results"])
             has_more = response["has_more"]
             next_cursor = response["next_cursor"]
-        
+
         return results
 
     return {
@@ -52,7 +54,7 @@ def _get_raw_roadmap():
             filter={
                 "and": [
                     {
-                        "property": "Show on public Streamlit roadmap",
+                        "property": "Roadmap app show",
                         "checkbox": {"equals": True},
                     },
                     {
@@ -82,7 +84,7 @@ def _get_roadmap(results):
 
         title = _get_plain_text(props["Name"]["title"])
         # Manually remove "(parent project)" and "(release)" and "(experimental release)" from titles.
-        # TODO: Could extend this to remove everything in brackets. 
+        # TODO: Could extend this to remove everything in brackets.
         title = title.replace("(parent project)", "")
         title = title.replace("(release)", "")
         title = title.replace("(experimental release)", "")
@@ -94,17 +96,17 @@ def _get_roadmap(results):
             icon = result["icon"]["emoji"]
         else:
             icon = "🏳️"
-        public_description = _get_plain_text(props["Public description"]["rich_text"])
+        public_description = _get_plain_text(
+            props["Roadmap app description"]["rich_text"]
+        )
 
         if "Stage" in props:
-            stage = props["Stage"]["select"]["name"]
+            # st.write(props["Stage"])
+            stage = props["Stage"]["status"]["name"]
         else:
             stage = ""
 
-        if (
-            "Quarter" in props
-            and props["Quarter"]["select"] is not None
-        ):
+        if "Quarter" in props and props["Quarter"]["select"] is not None:
             quarter = props["Quarter"]["select"]["name"]
         else:
             quarter = "Future"
@@ -156,43 +158,36 @@ def _get_current_quarter_label():
 STAGE_SORT = defaultdict(
     lambda: -1,
     {
-        "Needs triage": 0,
+        # "Needs triage": 0,
         "Backlog": 1,
-        "Prioritized": 2,
-        "⏳ Paused": 3,
-        "👟 Speccing": 4,
-        "👷 In tech design": 5,
-        "👷 Ready for dev": 6,
-        "👷 In development": 7,
-        "👟 👷 In testing / review": 8,
-        "🏁 Ready for launch": 9,
-        "✅ Launched": 10,
+        # "Prioritized": 2,
+        "Paused": 3,
+        "Speccing": 4,
+        "Ready for development": 5,
+        "In development": 6,
+        "In testing / review": 7,
+        "Ready for launch": 8,
+        "Launched": 9,
     },
 )
 
 STAGE_COLORS = {
-    "Needs triage": "rgba(206, 205, 202, 0.5)",
-    "Backlog": "rgba(206, 205, 202, 0.5)",
-    "Prioritized": "rgba(206, 205, 202, 0.5)",
-    "👟 Speccing": "rgba(221, 0, 129, 0.2)",
-    "👷 In tech design": "rgba(221, 0, 129, 0.2)",
-    "👷 Ready for dev": "rgba(221, 0, 129, 0.2)",
-    "👷 In development": "rgba(0, 135, 107, 0.2)",
-    "👟 👷 In testing / review": "rgba(0, 120, 223, 0.2)",
-    "🏁 Ready for launch": "rgba(103, 36, 222, 0.2)",
-    "✅ Launched": "rgba(140, 46, 0, 0.2)",
+    "Backlog": "#F1F1F0",
+    "Speccing": "#FFE2DE",
+    "Ready for development": "#FFE2DE",
+    "In development": "#FEEBC7",
+    "In testing / review": "#E8DEEF",
+    "Ready for launch": "#D3E4EF",
+    "Launched": "#DCECDB",
 }
 STAGE_SHORT_NAMES = {
-    "Needs triage": "Needs triage",
     "Backlog": "Backlog",
-    "Prioritized": "Prioritized",
-    "👟 Speccing": "👟 Planning",
-    "👷 In tech design": "👟 Planning",
-    "👷 Ready for dev": "👟 Planning",
-    "👷 In development": "👷 Development",
-    "👟 👷 In testing / review": "🧪 Testing",
-    "🏁 Ready for launch": "🏁 Ready for launch",
-    "✅ Launched": "✅ Launched",
+    "Speccing": "Planning",
+    "Ready for development": "Planning",
+    "In development": "Development",
+    "In testing / review": "Testing",
+    "Ready for launch": "Ready for launch",
+    "Launched": "Launched",
 }
 
 
@@ -220,9 +215,7 @@ SPACE = "&nbsp;"
 
 
 def _draw_groups(roadmap_by_group, groups):
-
     for group in groups:
-
         projects = roadmap_by_group[group]
         cleaned_group = (
             re.sub(r"FY../Q.", "", group)
@@ -234,7 +227,6 @@ def _draw_groups(roadmap_by_group, groups):
         st.header(cleaned_group)
 
         for p in _reverse_sort_by_stage(projects):
-
             if STAGE_SORT[p.stage] >= 4:
                 stage = _get_stage_tag(p.stage)
             else:
@@ -247,8 +239,10 @@ def _draw_groups(roadmap_by_group, groups):
 
             a, b = st.columns([0.03, 0.97])
             a.markdown(p.icon)
-            b.markdown(f"<strong>{p.title}</strong> {stage}{description}", unsafe_allow_html=True)
-
+            b.markdown(
+                f"<strong>{p.title}</strong> {stage}{description}",
+                unsafe_allow_html=True,
+            )
 
 
 st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=78)
