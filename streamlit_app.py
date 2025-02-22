@@ -91,6 +91,8 @@ def _get_roadmap(results):
         title = title.replace("(PrPr)", "")
         title = title.replace("(PuPr)", "")
         title = title.replace("(GA)", "")
+        title = title.replace("(GA, milestone 1)", "")
+        title = title.replace("(GA, milestone 2)", "")
         title = title.replace(" - FKA st.database", "")
         if "icon" in result and result["icon"]["type"] == "emoji":
             icon = result["icon"]["emoji"]
