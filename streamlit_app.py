@@ -54,7 +54,7 @@ def _get_raw_roadmap():
             filter={
                 "and": [
                     {
-                        "property": "Roadmap app show",
+                        "property": "Show on roadmap app",
                         "checkbox": {"equals": True},
                     },
                     {
@@ -97,7 +97,7 @@ def _get_roadmap(results):
         else:
             icon = "🏳️"
         public_description = _get_plain_text(
-            props["Roadmap app description"]["rich_text"]
+            props["Description on roadmap app"]["rich_text"]
         )
 
         if "Stage" in props:
