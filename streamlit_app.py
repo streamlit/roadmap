@@ -174,13 +174,13 @@ STAGE_SORT = defaultdict(
 )
 
 STAGE_COLORS = {
-    "Backlog": "#F1F1F0",
-    "Speccing": "#FFE2DE",
-    "Ready for development": "#FFE2DE",
-    "In development": "#FEEBC7",
-    "In testing / review": "#E8DEEF",
-    "Ready for launch": "#D3E4EF",
-    "Launched": "#DCECDB",
+    "Backlog": "gray",
+    "Speccing": "red",
+    "Ready for development": "red",
+    "In development": "orange",
+    "In testing / review": "purple",
+    "Ready for launch": "blue",
+    "Launched": "green",
 }
 STAGE_SHORT_NAMES = {
     "Backlog": "Backlog",
@@ -193,16 +193,10 @@ STAGE_SHORT_NAMES = {
 }
 
 
-def _get_stage_tag(stage):
-    color = STAGE_COLORS.get(stage, "rgba(206, 205, 202, 0.5)")
+def _get_stage_badge(stage):
+    color = STAGE_COLORS.get(stage, "gray")
     short_name = STAGE_SHORT_NAMES.get(stage, stage)
-    return (
-        f'<span style="background-color: {color}; padding: 1px 6px; '
-        "margin: 0 5px; display: inline; vertical-align: middle; "
-        f"border-radius: 0.25rem; font-size: 0.75rem; font-weight: 400; "
-        f'white-space: nowrap">{short_name}'
-        "</span>"
-    )
+    return f"&nbsp; :{color}-badge[{short_name}]"
 
 
 def _reverse_sort_by_stage(projects):
@@ -230,14 +224,14 @@ def _draw_groups(roadmap_by_group, groups):
 
         for p in _reverse_sort_by_stage(projects):
             if STAGE_SORT[p.stage] >= 4:
-                stage = _get_stage_tag(p.stage)
+                stage = _get_stage_badge(p.stage)
             else:
                 stage = ""
 
             description = ""
 
             if p.public_description:
-                description = f"<br /><small style='color: #808495'>{p.public_description}</small>"
+                description = f"<br />:small[:gray[{p.public_description}]]"
 
             a, b = st.columns([0.03, 0.97])
             a.markdown(p.icon)
