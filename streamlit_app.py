@@ -178,7 +178,7 @@ STAGE_COLORS = {
     "Speccing": "red",
     "Ready for development": "red",
     "In development": "orange",
-    "In testing / review": "purple",
+    "In testing / review": "violet",
     "Ready for launch": "blue",
     "Launched": "green",
 }
