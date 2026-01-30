@@ -261,14 +261,6 @@ st.info(
     icon="👾",
 )
 
-st.success(
-    """
-    Read [the blog post on Streamlit's roadmap](https://blog.streamlit.io/the-next-frontier-for-streamlit/)
-    to understand our broader vision.
-    """,
-    icon="🗺",
-)
-
 results = _get_raw_roadmap()["results"]
 roadmap_by_group = _get_roadmap(results)
 
