@@ -17,7 +17,7 @@ from roadmap_icons import icon_for_issue
 
 GITHUB_REPOSITORY_URL = "https://github.com/streamlit/streamlit"
 RELEASE_NOTES_URL = "https://docs.streamlit.io/develop/quick-reference/release-notes"
-STREAMLIT_LOGO_URL = "https://streamlit.io/images/brand/streamlit-mark-color.png"
+STREAMLIT_LOGO_URL = "https://streamlit.io/images/brand/streamlit-mark-color.svg"
 TTL = 4 * 60 * 60
 ROADMAP_CACHE_VERSION = 8
 
