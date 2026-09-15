@@ -1,6 +1,6 @@
 import re
 from dataclasses import replace
-from datetime import date
+from datetime import date, timedelta
 from urllib.parse import urlparse
 
 import streamlit as st
@@ -20,6 +20,8 @@ RELEASE_NOTES_URL = "https://docs.streamlit.io/develop/quick-reference/release-n
 STREAMLIT_LOGO_URL = "https://streamlit.io/images/brand/streamlit-mark-color.svg"
 TTL = 4 * 60 * 60
 ROADMAP_CACHE_VERSION = 8
+# Milestone due dates are feature-cutoff dates; we typically release 4 days later.
+RELEASE_DELAY_DAYS = 4
 
 STATUS_COLORS = {
     "Targeted": "blue",
@@ -156,7 +158,11 @@ def _draw_items(
 
 def _draw_release(section: MilestoneSection, *, is_past: bool = False) -> None:
     st.subheader(section.title)
-    release_date = _format_date(section.due_on) if section.due_on else "To be announced"
+    release_date = (
+        _format_date(section.due_on + timedelta(days=RELEASE_DELAY_DAYS))
+        if section.due_on
+        else "To be announced"
+    )
     date_label = "Release date" if is_past else "Target release"
     st.caption(
         f"{date_label}: **{release_date}** · [View milestone on GitHub]({section.url})"
